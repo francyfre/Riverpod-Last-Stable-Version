@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../my_provider.dart';
 
 void main() {
   runApp(
@@ -11,29 +12,28 @@ void main() {
 
 // Provider have no state! is much simpler
 final myProvider = Provider((ref) => 3);
+final mySecondProvider = Provider((ref) => "Hey, i am Provider");
 
-class MyApp extends StatelessWidget {
+
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
   final int someNumber = 22;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    int myNumber = ref.watch(myProvider);
+    String myString = ref.watch(mySecondProvider);
+    int mySecondNumber = ref.watch(myThirdProvider);
+
     return MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? _) {
-              int myValue = ref.watch(myProvider);
-              return Text("some number: $myValue");
-            },
-          ),
+          child: Text("some blaBla: $mySecondNumber"),
         ),
         appBar: AppBar(
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () {
-                print('yo!');
-              },
+              onPressed: () {},
             ),
           ],
         ),
