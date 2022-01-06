@@ -1,60 +1,56 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// videoLesson: https://www.youtube.com/watch?v=eT53Ht4r94k&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=5
+// videoLesson: https://www.youtube.com/watch?v=2kP-2t3_taE&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=7
 void main() {
   runApp(
-    const ProviderScope(
+    ProviderScope(
       child: MyApp(),
     ),
   );
 }
 
-// Provider have no state! is much simpler
-final myProvider = StateProvider((ref) => 100);
+class myNotifier extends StateNotifier<List<String>> {
+  myNotifier() : super([]); // initial value
 
-class MyApp extends ConsumerStatefulWidget {
-  final a = 22;
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  ConsumerState<MyApp> createState() => _MyAppState();
+  void add(String stringToAdd) {
+    state = [...state, stringToAdd];
+    // state = [oldState, newState];
+  }
 }
 
-class _MyAppState extends ConsumerState<MyApp> {
-  @override
-  void initState() {
-    widget.a;
-    //ref.watch();
-    super.initState();
-  }
+// Provider
+final myProvider = StateNotifierProvider((ref) => myNotifier());
+
+class MyApp extends ConsumerWidget {
+  MyApp({Key? key}) : super(key: key);
+
+  Random random = Random();
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(
-    BuildContext context,
-  ) {
-    //int myValue = ref.watch(myProvider); // access to the state
-    int myValue = ref.watch(myProvider); // access to the state
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final listOfString = ref.watch(myProvider) as List;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
-          child: Text("some blaBla: $myValue"),
+          child: Column(
+              children: //listOfString.map((string) => Text(string)).toList(),
+                  [
+                ...listOfString.map((string) => Text(string)),
+              ]),
         ),
         appBar: AppBar(
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
-                // change state
-                //ref.read(myProvider.notifier).state++;
-                ref.read(myProvider.state).state++;
+                // change status
+                ref
+                    .read(myProvider.notifier)
+                    .add('new string ${random.nextInt(100)}');
               },
             ),
           ],
