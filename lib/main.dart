@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../my_provider.dart';
 
+// videoLesson: https://www.youtube.com/watch?v=eT53Ht4r94k&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=5
 void main() {
   runApp(
     const ProviderScope(
@@ -11,29 +11,32 @@ void main() {
 }
 
 // Provider have no state! is much simpler
-final myProvider = Provider((ref) => 3);
-final mySecondProvider = Provider((ref) => "Hey, i am Provider");
-
+final myProvider = StateProvider((ref) => 100);
 
 class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
-  final int someNumber = 22;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    int myNumber = ref.watch(myProvider);
-    String myString = ref.watch(mySecondProvider);
-    int mySecondNumber = ref.watch(myThirdProvider);
+    //int myValue = ref.watch(myProvider); // access to the state
+    int myValue = ref.watch(myProvider.notifier).state; // access to the state
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
-          child: Text("some blaBla: $mySecondNumber"),
+          child: Text("some blaBla: $myValue"),
         ),
         appBar: AppBar(
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () {},
+              onPressed: () {
+                // change state
+                //ref.read(myProvider.notifier).state++;
+                ref.read(myProvider.state).state++;
+                print(ref.read(myProvider));
+              },
             ),
           ],
         ),
