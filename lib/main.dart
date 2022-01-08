@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// videoLesson: https://www.youtube.com/watch?v=2kP-2t3_taE&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=7
+// videoLesson: https://www.youtube.com/watch?v=Eg3ZIT-_rcc&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=8
 void main() {
   runApp(
     ProviderScope(
@@ -22,7 +22,8 @@ class myNotifier extends StateNotifier<List<String>> {
 }
 
 // Provider
-final myProvider = StateNotifierProvider((ref) => myNotifier());
+final myProvider =
+    StateNotifierProvider<myNotifier, List>((ref) => myNotifier());
 
 class MyApp extends ConsumerWidget {
   MyApp({Key? key}) : super(key: key);
@@ -31,7 +32,14 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final listOfString = ref.watch(myProvider) as List;
+    final listOfString = ref.watch(myProvider);
+
+    // is asyncronous, never call in state lifecycle, or onPress{}
+    ref.listen<List>(myProvider, (List? prevState, List newState) {
+      // callback function, call avery time state changes!
+      print('listen: $newState');
+    });
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
