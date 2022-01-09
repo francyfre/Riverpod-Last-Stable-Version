@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// videoLesson: https://www.youtube.com/watch?v=WCF4bziDxZA&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=9
+// videoLesson: https://www.youtube.com/watch?v=sW59bZhE7Us&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=10
 void main() {
   runApp(
     ProviderScope(
@@ -12,24 +12,29 @@ void main() {
   );
 }
 
-class Car {
-  final String name;
-  final String model;
-  final Color color;
-
-  Car({
-    required this.name,
-    required this.model,
-    this.color = Colors.grey,
-  });
+enum TypeOfNumber {
+  low,
+  medium,
+  high,
 }
 
-final carProvider = StateProvider<Car>((ref) {
-  return Car(
-    name: 'BMW',
-    model: 'QTb',
-    // color is defualt
-  );
+final familyOfGetRandomNumber = StateProvider.family((ref, TypeOfNumber type) {
+  final random = Random();
+  late int _generateNumber;
+
+  //TypeOfNumber type = TypeOfNumber.low; // notHere
+
+  if (type == TypeOfNumber.low) {
+    _generateNumber = random.nextInt(10);
+  }
+  if (type == TypeOfNumber.medium) {
+    _generateNumber = random.nextInt(40);
+  }
+  if (type == TypeOfNumber.high) {
+    _generateNumber = random.nextInt(50);
+  }
+
+  return _generateNumber;
 });
 
 class MyApp extends ConsumerWidget {
@@ -37,45 +42,20 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // use only Color, so i select color of the car
-    Color carColor = ref.watch(carProvider.select((car) => car.color));
-
-    ref.listen(carProvider.select((car) => car.model),
-        (oldValueModel, newValueModel) {
-      print('oldValueModel: $oldValueModel');
-      print('newValueModel: $newValueModel \n');
-    });
+    // need to send type to provider
+    int myNumber = ref.watch(familyOfGetRandomNumber(TypeOfNumber.high));
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
-          child: Container(
-            padding: const EdgeInsets.all(30),
-            color: carColor,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text('Some Text'),
-              ],
-            ),
-          ),
+          child: Text('$myNumber'),
         ),
         appBar: AppBar(
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () {
-                // carProvider.state
-                final carProviderController = ref.read(carProvider.notifier);
-                // with carProviderController i can access to the state and modify
-                carProviderController.state = Car(
-                  name: carProviderController.state.name, // oldState
-                  // change model and .listen can work!
-                  model: carProviderController.state.model + '1',
-                  color: Colors.red,
-                );
-              },
+              onPressed: () {},
             ),
           ],
         ),
