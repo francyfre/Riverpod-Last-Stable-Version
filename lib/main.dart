@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// videoLesson: https://www.youtube.com/watch?v=Eg3ZIT-_rcc&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=8
+// videoLesson: https://www.youtube.com/watch?v=WCF4bziDxZA&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=9
 void main() {
   runApp(
     ProviderScope(
@@ -12,53 +12,69 @@ void main() {
   );
 }
 
-class myNotifier extends StateNotifier<List<String>> {
-  myNotifier() : super([]); // initial value
+class Car {
+  final String name;
+  final String model;
+  final Color color;
 
-  void add(String stringToAdd) {
-    state = [...state, stringToAdd];
-    // state = [oldState, newState];
-  }
+  Car({
+    required this.name,
+    required this.model,
+    this.color = Colors.grey,
+  });
 }
 
-// Provider
-final myProvider =
-    StateNotifierProvider<myNotifier, List>((ref) => myNotifier());
+final carProvider = StateProvider<Car>((ref) {
+  return Car(
+    name: 'BMW',
+    model: 'QTb',
+    // color is defualt
+  );
+});
 
 class MyApp extends ConsumerWidget {
   MyApp({Key? key}) : super(key: key);
 
-  Random random = Random();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final listOfString = ref.watch(myProvider);
+    // use only Color, so i select color of the car
+    Color carColor = ref.watch(carProvider.select((car) => car.color));
 
-    // is asyncronous, never call in state lifecycle, or onPress{}
-    ref.listen<List>(myProvider, (List? prevState, List newState) {
-      // callback function, call avery time state changes!
-      print('listen: $newState');
+    ref.listen(carProvider.select((car) => car.model),
+        (oldValueModel, newValueModel) {
+      print('oldValueModel: $oldValueModel');
+      print('newValueModel: $newValueModel \n');
     });
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
-          child: Column(
-              children: //listOfString.map((string) => Text(string)).toList(),
-                  [
-                ...listOfString.map((string) => Text(string)),
-              ]),
+          child: Container(
+            padding: const EdgeInsets.all(30),
+            color: carColor,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text('Some Text'),
+              ],
+            ),
+          ),
         ),
         appBar: AppBar(
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
-                // change status
-                ref
-                    .read(myProvider.notifier)
-                    .add('new string ${random.nextInt(100)}');
+                // carProvider.state
+                final carProviderController = ref.read(carProvider.notifier);
+                // with carProviderController i can access to the state and modify
+                carProviderController.state = Car(
+                  name: carProviderController.state.name, // oldState
+                  // change model and .listen can work!
+                  model: carProviderController.state.model + '1',
+                  color: Colors.red,
+                );
               },
             ),
           ],
