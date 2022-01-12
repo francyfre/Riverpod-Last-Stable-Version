@@ -1,65 +1,29 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_stable_aspiiire/page1.dart';
+import 'package:riverpod_stable_aspiiire/page2.dart';
 
-// videoLesson: https://www.youtube.com/watch?v=sW59bZhE7Us&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=10
+// videoLesson: https://www.youtube.com/watch?v=qpfHSWziumM&list=PLzaGtnxLcM7HYt-MhMZ-j0Bmeo4RqPHoS&index=11
 void main() {
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: MyApp(),
     ),
   );
 }
 
-enum TypeOfNumber {
-  low,
-  medium,
-  high,
-}
-
-final familyOfGetRandomNumber = StateProvider.family((ref, TypeOfNumber type) {
-  final random = Random();
-  late int _generateNumber;
-
-  //TypeOfNumber type = TypeOfNumber.low; // notHere
-
-  if (type == TypeOfNumber.low) {
-    _generateNumber = random.nextInt(10);
-  }
-  if (type == TypeOfNumber.medium) {
-    _generateNumber = random.nextInt(40);
-  }
-  if (type == TypeOfNumber.high) {
-    _generateNumber = random.nextInt(50);
-  }
-
-  return _generateNumber;
-});
-
 class MyApp extends ConsumerWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // need to send type to provider
-    int myNumber = ref.watch(familyOfGetRandomNumber(TypeOfNumber.high));
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(
-          child: Text('$myNumber'),
-        ),
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {},
-            ),
-          ],
-        ),
-      ),
+      routes: {
+        '/page1': (context) => const Page1(),
+        '/page2': (context) => const Page2(),
+      },
+      initialRoute: '/page1',
     );
   }
 }
